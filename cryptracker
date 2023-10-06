@@ -1,0 +1,44 @@
+import requests
+from bs4 import BeautifulSoup
+import matplotlib.pyplot as plt
+
+
+crypto_name = "Bitcoin"
+url = "https://www.coindesk.com/price/bitcoin"
+
+def scrape_price():
+   
+    response = requests.get(url)
+
+    if response.status_code == 200:
+      
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+      
+        price_element = soup.find('div', class_='price-large')
+        price = price_element.text
+
+        return price
+    else:
+        print("Failed to retrieve data.")
+        return None
+
+def plot_price_chart(prices):
+    plt.plot(prices)
+    plt.xlabel("Time")
+    plt.ylabel("Price (USD)")
+    plt.title(f"{crypto_name} Price Tracker")
+    plt.show()
+
+if __name__ == "__main__":
+
+    historical_prices = []
+
+    while True:
+   
+        current_price = scrape_price()
+        if current_price:
+            print(f"{crypto_name} Price: {current_price}")
+            historical_prices.append(float(current_price.replace(",", "").replace("$", "")))
+
+
